@@ -5,6 +5,7 @@ def ford(Graph, r):
         for node in Graph.vertices:
             node.y = float("inf")
             node.p = None
+        Graph.current_edge_index = -1
 
     initialiseGraph(Graph)
     r.y = 0
@@ -58,16 +59,13 @@ class AbstractGraph:
 
 class DirectedGraph(AbstractGraph):
 
-    def __init__(self, vertices = [], edges = [], permutated_edges = [], current_edge_index = "nonexistent"):
+    def __init__(self, vertices = [], edges = [], permutated_edges = [], current_edge_index = -1):
         AbstractGraph.__init__(self, vertices, edges)
         self.permutated_edges = (len(vertices) - 1) * edges
         self.current_edge_index = current_edge_index
         Node.color = "white"
 
     def next_edge(self):
-        if self.current_edge_index == "nonexistent":
-            self.current_edge_index = 0
-            return self.permutated_edges[0]
         if self.current_edge_index == (len(self.permutated_edges) - 1):
             return None
         next_edge_index = self.current_edge_index + 1
@@ -107,7 +105,7 @@ def topologische_sortierung_zwei(Graph, node, vertices_list):
 
 class DAG(AbstractGraph):
 
-    def __init__(self, vertices = [], edges = [], permutated_edges = [], current_edge_index = "nonexistent"):
+    def __init__(self, vertices = [], edges = [], permutated_edges = [], current_edge_index = -1):
         AbstractGraph.__init__(self, vertices, edges)
         self.permutated_edges = permutated_edges
         topologische_sortierung(self.vertices)
@@ -118,9 +116,6 @@ class DAG(AbstractGraph):
         self.current_edge_index = current_edge_index
 
     def next_edge(self):
-        if self.current_edge_index == "nonexistent":
-            self.current_edge_index = 0
-            return self.permutated_edges[0]
         if self.current_edge_index == (len(self.edges) - 1):
             return None
         next_edge_index = self.current_edge_index + 1
