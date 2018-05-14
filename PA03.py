@@ -5,6 +5,7 @@ def ford(Graph, r):
         for node in Graph.vertices:
             node.y = float("inf")
             node.p = None
+
         Graph.current_edge_index = -1
 
     initialiseGraph(Graph)
