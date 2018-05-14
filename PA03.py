@@ -2,7 +2,7 @@
 def ford(Graph, r):
 
     def initialiseGraph(Graph):
-        for node in Graph.nodes:
+        for node in Graph.vertices:
             node.y = float("inf")
             node.p = None
 
@@ -20,7 +20,7 @@ def ford(Graph, r):
             edge.target.y = edge.start.y + edge.c
             edge.target.p = edge.start
 
-    for i in range(1, len(Graph.nodes)):
+    for i in range(1, len(Graph.vertices)):
         next_edge = Graph.next_edge()
         while next_edge != None:
             balance_edges(Graph, next_edge)
@@ -49,8 +49,8 @@ class Edge:
 
 class AbstractGraph:
 
-    def __init__(self, nodes = [], edges = []):
-        self.nodes = nodes
+    def __init__(self, vertices = [], edges = []):
+        self.vertices = vertices
         self.edges = edges
 
     def next_edge(self):
@@ -58,9 +58,9 @@ class AbstractGraph:
 
 class DirectedGraph(AbstractGraph):
 
-    def __init__(self, nodes = [], edges = [], permutated_edges = [], current_edge_index = "nonexistent"):
-        AbstractGraph.__init__(self, nodes, edges)
-        self.permutated_edges = (len(nodes) - 1) * edges
+    def __init__(self, vertices = [], edges = [], permutated_edges = [], current_edge_index = "nonexistent"):
+        AbstractGraph.__init__(self, vertices, edges)
+        self.permutated_edges = (len(vertices) - 1) * edges
         self.current_edge_index = current_edge_index
         Node.color = "white"
 
@@ -79,17 +79,17 @@ def topologische_sortierung(Graph):
     #there will be no cycles so I could eventually remove the check up
     global found_cycle
     found_cycle = False
-    nodes_list = []
+    vertices_list = []
     for node in Graph:
         if node.color == "white":
-            topologische_sortierung_zwei(Graph, node, nodes_list)
+            topologische_sortierung_zwei(Graph, node, vertices_list)
             if found_cycle == True:
                 return [-1]
-    nodes_list.reverse()
-    return nodes_list
+    vertices_list.reverse()
+    return vertices_list
 
 
-def topologische_sortierung_zwei(Graph, node, nodes_list):
+def topologische_sortierung_zwei(Graph, node, vertices_list):
     global found_cycle
     node.color = "grey"
     for edge in node.outgoing:
@@ -97,21 +97,21 @@ def topologische_sortierung_zwei(Graph, node, nodes_list):
             found_cycle = True
             return
         if edge.target.color == "white":
-            topologische_sortierung_zwei(Graph, edge.target, nodes_list)
+            topologische_sortierung_zwei(Graph, edge.target, vertices_list)
         if edge.target.color == "black":
             continue
     node.color = "black"
-    nodes_list.append(node)
+    vertices_list.append(node)
     return
 
 
 class DAG(AbstractGraph):
 
-    def __init__(self, nodes = [], edges = [], permutated_edges = [], current_edge_index = "nonexistent"):
-        AbstractGraph.__init__(self, nodes, edges)
+    def __init__(self, vertices = [], edges = [], permutated_edges = [], current_edge_index = "nonexistent"):
+        AbstractGraph.__init__(self, vertices, edges)
         self.permutated_edges = permutated_edges
-        topologische_sortierung(self.nodes)
-        for node in self.nodes:
+        topologische_sortierung(self.vertices)
+        for node in self.vertices:
             for edge in self.edges:
                 if edge.start == node:
                     self.permutated_edges.append(edge)
