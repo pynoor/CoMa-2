@@ -5,7 +5,6 @@ def ford(Graph, r):
         for node in Graph.vertices:
             node.y = float("inf")
             node.p = None
-
         Graph.current_edge_index = -1
 
     initialiseGraph(Graph)
@@ -79,13 +78,18 @@ def topologische_sortierung(Graph):
     global found_cycle
     found_cycle = False
     vertices_list = []
-    for node in Graph:
+    for node in Graph.vertices:
         if node.color == "white":
-            topologische_sortierung_zwei(Graph, node, vertices_list)
+            topologische_sortierung_zwei(Graph.vertices, node, vertices_list)
             if found_cycle == True:
                 return [-1]
     vertices_list.reverse()
-    return vertices_list
+    output = []
+    for node in vertices_list:
+        for edge in Graph.edges:
+            if edge.start == node:
+                output.append(edge)
+    return output
 
 
 def topologische_sortierung_zwei(Graph, node, vertices_list):
@@ -108,12 +112,7 @@ class DAG(AbstractGraph):
 
     def __init__(self, vertices = [], edges = [], permutated_edges = [], current_edge_index = -1):
         AbstractGraph.__init__(self, vertices, edges)
-        self.permutated_edges = permutated_edges
-        topologische_sortierung(self.vertices)
-        for node in self.vertices:
-            for edge in self.edges:
-                if edge.start == node:
-                    self.permutated_edges.append(edge)
+        self.permutated_edges = topologische_sortierung(self)
         self.current_edge_index = current_edge_index
 
     def next_edge(self):
