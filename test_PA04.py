@@ -4,7 +4,7 @@ from PA04 import Edge
 from PA04 import sort_edges
 from PA04 import generate_edge_list
 
-def kruskal_calculates_correct_edges():
+def test_kruskal_calculates_correct_edges():
     #1)Construction
     e1 = Edge(0,2,4)
     e2 = Edge(2,1,3)
@@ -26,11 +26,11 @@ def test_sort_edges():
     expected_result = [2,3,4]
     assert result == expected_result
 
-def generate_edge_list():
+def test_generate_edge_list():
     e1 = Edge(0,2,4)
     e2 = Edge(2,1,3)
     e3 = Edge(0,1,2)
     IncidenceList = [[e1, e3], [e2, e3], [e1, e2]]
-    result = generate_edge_list(IncidenceList)
-    expected_result = [2, 3, 4]
+    result = set([edge.w for edge in generate_edge_list(IncidenceList)])
+    expected_result = set([2, 3, 4])
     assert result == expected_result
