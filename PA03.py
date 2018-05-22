@@ -111,7 +111,8 @@ class DAG(AbstractGraph):
 
     def __init__(self, vertices = [], edges = [], permutated_edges = [], current_edge_index = -1):
         AbstractGraph.__init__(self, vertices, edges)
-        Node.color = "white"
+        for node in vertices:
+            node.color = "white"
         self.permutated_edges = topologische_sortierung(self)
         self.current_edge_index = current_edge_index
 
