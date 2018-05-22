@@ -21,11 +21,11 @@ def ford(Graph, r):
             edge.target.y = edge.start.y + edge.c
             edge.target.p = edge.start
 
-    for i in range(1, len(Graph.vertices)):
+
+    next_edge = Graph.next_edge()
+    while next_edge != None:
+        balance_edges(Graph, next_edge)
         next_edge = Graph.next_edge()
-        while next_edge != None:
-            balance_edges(Graph, next_edge)
-            next_edge = Graph.next_edge()
 
 
     for edge in Graph.edges:
@@ -63,7 +63,6 @@ class DirectedGraph(AbstractGraph):
         AbstractGraph.__init__(self, vertices, edges)
         self.permutated_edges = (len(vertices) - 1) * edges
         self.current_edge_index = current_edge_index
-        Node.color = "white"
 
     def next_edge(self):
         if self.current_edge_index == (len(self.permutated_edges) - 1):
@@ -112,6 +111,7 @@ class DAG(AbstractGraph):
 
     def __init__(self, vertices = [], edges = [], permutated_edges = [], current_edge_index = -1):
         AbstractGraph.__init__(self, vertices, edges)
+        Node.color = "white"
         self.permutated_edges = topologische_sortierung(self)
         self.current_edge_index = current_edge_index
 
