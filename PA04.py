@@ -17,12 +17,12 @@ def sort_edges(edges):
     return sorted(edges, key = lambda x: x.w)
 
 def generate_edge_list(IncidenceList):
-    edges = []
+    edges = set()
     for incident_edge_list in IncidenceList:
         for edge in incident_edge_list:
             if edge not in edges:
-                edges.append(edge)
-    return edges
+                edges.add(edge)
+    return list(edges)
 
 class Edge:
 
