@@ -43,9 +43,9 @@ def test_make_set():
     e3 = Edge(0,1,2)
     IncidenceList = [[e1, e3], [e2, e3], [e1, e2]]
     F = UnionFind()
-    F.p = [0]*len(IncidenceList)
+    F.subsets = [0]*len(IncidenceList)
     for vertice in range(len(IncidenceList)):
         F.make_set(vertice)
-    result = F.p
+    result = F.subsets
     expected_result = [0,1,2]
     assert result == expected_result
