@@ -14,8 +14,7 @@ def kruskal(IncidenceList):
 
 
 def sort_edges(edges):
-    output = sorted(edges, key = lambda x: x.w)
-    return output
+    return sorted(edges, key = lambda x: x.w)
 
 def generate_edge_list(IncidenceList):
     edges = []
