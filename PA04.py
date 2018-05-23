@@ -1,13 +1,15 @@
 def kruskal(IncidenceList):
     edges = generate_edge_list(IncidenceList)
     edges = sort_edges(edges)
-    F = [[number] for number in range(len(IncidenceList))]
+    F = UnionFind()
+    F.p = [0]*len(IncidenceList)
+
+    for vertice in range(len(IncidenceList)):
+        F.make_set(vertice)
     B = []
     for edge in edges:
-        if [edge.incident[0]] in F and [edge.incident[1]] in F:
-            F.remove([edge.incident[0]])
-            F.remove([edge.incident[1]])
-            F.append([edge.incident[0], edge.incident[1]])
+        if F.find_set(edge.incident[0]) != F.find_set(edge.incident[1]):
+            F.union(edge.incident[0], edge.incident[1])
             B.append(edge)
     return B
 
@@ -34,7 +36,7 @@ class Edge:
 
 class UnionFind:
     def __init__(self):
-        self.p = [0]*10
+        self.p = [0]
 
     def make_set(self, vertice):
         self.p[vertice] = vertice
@@ -44,6 +46,6 @@ class UnionFind:
 
     def union(self, start,target):
         store = self.p[start]
-        for vertice in range(1,10):
+        for vertice in range(1,len(self.p)):
             if self.p[vertice] == store:
                 self.p[vertice] = self.p[target]
