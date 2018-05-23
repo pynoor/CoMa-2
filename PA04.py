@@ -1,17 +1,16 @@
 def kruskal(IncidenceList):
     edges = generate_edge_list(IncidenceList)
     edges = sort_edges(edges)
-    F = UnionFind()
-    F.p = [0]*len(IncidenceList)
-
+    subsets = UnionFind()
+    subsets.p = [0]*len(IncidenceList)
     for vertice in range(len(IncidenceList)):
-        F.make_set(vertice)
-    B = []
+        subsets.make_set(vertice)
+    min_tree = []
     for edge in edges:
-        if F.find_set(edge.incident[0]) != F.find_set(edge.incident[1]):
-            F.union(edge.incident[0], edge.incident[1])
-            B.append(edge)
-    return B
+        if subsets.find_set(list(edge.incident)[0]) != subsets.find_set(list(edge.incident)[1]):
+            subsets.union(list(edge.incident)[0], list(edge.incident)[1])
+            min_tree.append(edge)
+    return min_tree
 
 
 def sort_edges(edges):
@@ -31,12 +30,12 @@ class Edge:
     __slots__ = ["incident", "w"]
 
     def __init__(self, start, target, weight):
-        self.incident = [start, target]
+        self.incident = {start, target}
         self.w = weight
 
 class UnionFind:
     def __init__(self):
-        self.p = [0]
+        self.p = []
 
     def make_set(self, vertice):
         self.p[vertice] = vertice
@@ -46,6 +45,6 @@ class UnionFind:
 
     def union(self, start,target):
         store = self.p[start]
-        for vertice in range(1,len(self.p)):
+        for vertice in range(len(self.p)):
             if self.p[vertice] == store:
                 self.p[vertice] = self.p[target]

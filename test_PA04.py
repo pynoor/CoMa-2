@@ -13,10 +13,9 @@ def test_kruskal_calculates_correct_edges():
     e3 = Edge(0,1,2)
     IncidenceList = [[e1, e3], [e2, e3], [e1, e2]]
     #2)Fantasize
-    print(kruskal(IncidenceList))
     result = [e.incident for e in kruskal(IncidenceList)]
     #2)Verify
-    expected_result = [[1,2], [0,1]]
+    expected_result = [{1,2}, {0,1}]
     assert result == expected_result
 
 def test_sort_edges():
