@@ -2,16 +2,16 @@ def kruskal(IncidenceList):
     edges = generate_edge_list(IncidenceList)
     edges = sort_edges(edges)
     forest = UnionFind()
-    forest.subsets = [0]*len(IncidenceList)
-    forest.p = [0]*len(IncidenceList)
-    for vertice in range(len(IncidenceList)):
-        forest.make_set(vertice)
-    min_tree = []
+
+    for vertex_id in range(len(IncidenceList)):
+        forest.make_set()
+
+    mintree = []
     for edge in edges:
         if forest.find_set(list(edge.incident)[0]) != forest.find_set(list(edge.incident)[1]):
             forest.union(list(edge.incident)[0], list(edge.incident)[1])
-            min_tree.append(edge)
-    return min_tree
+            mintree.append(edge)
+    return mintree
 
 
 def sort_edges(edges):
@@ -26,44 +26,65 @@ def generate_edge_list(IncidenceList):
     return list(edges)
 
 class Edge:
-
     __slots__ = ["incident", "w"]
-
     def __init__(self, start, target, weight):
         self.incident = {start, target}
         self.w = weight
 
+class Node:
+    def __init__(self, id, height_in_tree, parent):
+        self.height_in_tree = height_in_tree
+        self.id = id
+        self.parent = parent
+
 class UnionFind:
+
     def __init__(self):
-        self.p = []
-        self.subsets = []
+        self.node_list = [] #list of vertices
+        self.p = [] #list of root nodes
+        self.subtrees = []
 
-    def make_set(self, vertice):
-        self.subsets[vertice] = vertice
+    def make_set(self):
         self.p.append(-1)
-        #self.p[vertice] = -len(self.subsets[vertice])
+        new_node_id = len(self.p) - 1
+        new_node = Node(new_node_id, self.p[new_node_id], None)
+        self.node_list.append(new_node)
+        self.subtrees.append(new_node)
 
-    def find_set(self, vertice):
-        for tree in self.subsets:
-            if vertice in tree:
-                for other_vertice in tree:
-                    if tree.index(other_vertice) < tree.index(vertice):
-                        self.p[other_vertice] = "r"
-        return "r"
-        #return self.subsets[vertice]
+    def find_set(self, node_id):
+        #can make this shorter
+        iteration_node = self.node_list[node_id]
 
+        while iteration_node.parent != None:
+            iteration_node = iteration_node.parent
 
-    def get_root(self, subtree):
-        pass
+        found_root = iteration_node
 
-    def union(self, start,target):
-        found_start_subtree, found_target_subtree = find_set(start), find_set(target)
-        if found_start_subtree <= found_target_subtree:
-            self.p(get_root(found_start_subtree)) = self.p(get_root(found_target_subtree))
-            self.p(get_root(found_target_subtree)) = "size of combined tree"
+        iteration_node = self.node_list[node_id]
 
+        while iteration_node != found_root:
+            #Pfadkompression
+            store_iteration_node_parent = iteration_node.parent
+            iteration_node.parent = found_root
+            iteration_node = store_iteration_node_parent
 
-#        store = self.subsets[start]
-#        for vertice in range(len(self.subsets)):
-#            if self.subsets[vertice] == store:
-#                self.subsets[vertice] = self.subsets[target]
+            #hier
+            print(iteration_node.id)
+            print(self.p)
+            self.p[iteration_node.id] = found_root.id
+
+        return found_root.id
+
+    def union(self, start, target):
+        found_start_set, found_target_set = self.find_set(start), self.find_set(target)
+        if found_start_set < found_target_set:
+            self.node_list[found_start_set].parent = self.node_list[found_target_set]
+            store_value = self.p[found_start_set]
+            self.p[found_start_set] = self.p[found_target_set]
+            self.p[found_target_set] += store_value
+            self.subtrees.remove(self.subtrees[found_start_set])
+        else:
+            self.node_list[found_target_set].parent = self.node_list[found_start_set]
+            self.subtrees.remove(self.subtrees[found_target_set])
+            if found_start_set == found_target_set:
+                self.p[found_start_set] += self.p[found_target_set] + 1
