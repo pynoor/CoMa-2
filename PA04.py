@@ -2,15 +2,21 @@ def kruskal(IncidenceList):
     edges = generate_edge_list(IncidenceList)
     edges = sort_edges(edges)
     forest = UnionFind()
+    p = forest.p
+    vertex_count = len(IncidenceList)
 
-    for vertex_id in range(len(IncidenceList)):
+    for vertex_id in range(vertex_count):
         forest.make_set()
 
     mintree = []
     for edge in edges:
+        if vertex_count == 1:
+            return mintree
         if forest.find_set(list(edge.incident)[0]) != forest.find_set(list(edge.incident)[1]):
             forest.union(list(edge.incident)[0], list(edge.incident)[1])
+            p = forest.p
             mintree.append(edge)
+            vertex_count -= 1
     return mintree
 
 
@@ -31,60 +37,48 @@ class Edge:
         self.incident = {start, target}
         self.w = weight
 
-class Node:
-    def __init__(self, id, height_in_tree, parent):
-        self.height_in_tree = height_in_tree
-        self.id = id
-        self.parent = parent
 
 class UnionFind:
 
     def __init__(self):
-        self.node_list = [] #list of vertices
         self.p = [] #list of root nodes
-        self.subtrees = []
 
     def make_set(self):
         self.p.append(-1)
-        new_node_id = len(self.p) - 1
-        new_node = Node(new_node_id, self.p[new_node_id], None)
-        self.node_list.append(new_node)
-        self.subtrees.append(new_node)
 
-    def find_set(self, node_id):
+    def find_set(self, vertex):
         #can make this shorter
-        iteration_node = self.node_list[node_id]
+        vertex_id = vertex
 
-        while iteration_node.parent != None:
-            iteration_node = iteration_node.parent
+        while self.p[vertex_id] >= 0:
+            vertex_id = self.p[vertex_id]
 
-        found_root = iteration_node
+        found_root = vertex_id
 
-        iteration_node = self.node_list[node_id]
+        vertex_id = vertex
 
-        while iteration_node != found_root:
+        while vertex_id != found_root:
             #Pfadkompression
-            store_iteration_node_parent = iteration_node.parent
-            iteration_node.parent = found_root
-            iteration_node = store_iteration_node_parent
+            store_value = self.p[vertex_id]
+            self.p[vertex_id] = found_root
+            vertex_id = store_value
 
-            #hier
-            print(iteration_node.id)
-            print(self.p)
-            self.p[iteration_node.id] = found_root.id
-
-        return found_root.id
+        return found_root
 
     def union(self, start, target):
+
         found_start_set, found_target_set = self.find_set(start), self.find_set(target)
-        if found_start_set < found_target_set:
-            self.node_list[found_start_set].parent = self.node_list[found_target_set]
+
+        if found_start_set == found_target_set:
+            return
+
+        if self.p[found_start_set] > self.p[found_target_set]:
             store_value = self.p[found_start_set]
-            self.p[found_start_set] = self.p[found_target_set]
+            self.p[found_start_set] = found_target_set
             self.p[found_target_set] += store_value
-            self.subtrees.remove(self.subtrees[found_start_set])
+
         else:
-            self.node_list[found_target_set].parent = self.node_list[found_start_set]
-            self.subtrees.remove(self.subtrees[found_target_set])
-            if found_start_set == found_target_set:
-                self.p[found_start_set] += self.p[found_target_set] + 1
+            store_value = self.p[found_target_set]
+            self.p[found_target_set] = found_start_set
+            self.p[found_start_set] += store_value
+

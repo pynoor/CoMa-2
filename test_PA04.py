@@ -45,6 +45,6 @@ def test_make_set():
     F = UnionFind()
     for vertice in range(len(IncidenceList)):
         F.make_set()
-    result = [node.id for node in F.subtrees]
-    expected_result = [0,1,2]
+    result = F.p
+    expected_result = [-1, -1, -1]
     assert result == expected_result
