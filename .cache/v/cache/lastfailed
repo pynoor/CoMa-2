@@ -1,4 +1,5 @@
 {
   "test_PA03.py::test_next_edge_for_acyclic_directed_graph": true,
-  "test_PA04.py::test_kruskal_calculates_correct_edges": true
+  "test_PA04.py::test_kruskal_calculates_correct_edges": true,
+  "test_PA05.py::test_insert": true
 }
