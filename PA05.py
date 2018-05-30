@@ -1,3 +1,5 @@
+# TODO: define rotate_RL, rotate_LR, implement TikZ
+
 class Node:
     def __init__(self, key, parent, left, right):
         self.key = key
@@ -19,10 +21,9 @@ class Node:
 class AVLTree:
     def __init__(self, firstnodekey):
         self.insert(firstnodekey)
-        self.root = firstnodekey
         self.nodestyle = "circle, draw"
         self.edgestyle = "blue, very thick"
-
+        self.root = None
     def __str__(self):
         pass
 
@@ -37,15 +38,76 @@ class AVLTree:
             height += 1
         return height
 
-
-         # hereeeeee
-
-    def balance_tree(self):
-        pass
+    def repair_tree(self, node):
+        if node.balance == -2 and node.left.balance in (0,-1):
+            self.rotate_right(node)
+            if node.left.balance == 0:
+                node.balance = -1
+                node.left.balance = 1
+            else:
+                node.balance = 0
+                node.left.balance = 0
+        elif node.balance == -2 and node.left.balance == 1:
+            self.rotate_left_right(node)
+            if node.left.right.balance == 0:
+                node.balance = 0
+                node.left.balance = 0
+            elif node.left.right.balance == 1:
+                node.balance = 0
+                node.left.balance = -1
+            elif node.left.right.balance == -1:
+                node.balance = 1
+                node.left.balance = 0
+            node.left.right.balance = 0
+        elif node.balance == 2 and node.right.balance in (0,1):
+            self.rotate_left(node)
+            if node.right.balance == 1:
+                node.balance = 0
+                node.right.balance = 0
+            else:
+                node.balance = 1
+                node.right.balance = -1
+        elif node.balance == 2 and node.right.balance == -1:
+            self.rotate_right_left(node)
+            if node.right.left.balance == 0:
+                node.balance = 0
+                node.right.balance = 0
+            elif node.right.left.balance == 1:
+                node.balance = -1
+                node.left.balance = 0
+            elif node.right.left.balance == -1:
+                node.balance = 0
+                node.left.balance = 1
+            node.left.right.balance = 0
 
     def insert(self, key):
+        # to do: implement insertion
         new_node = Node(key, None, None, None)
-        self.balance_tree()
+        y = None
+        x = self.root
+        while x != None:
+            y = x
+            if new_node.key < x.key:
+                x = x.left
+            else:
+                x = x.right
+        new_node.p = y
+        if y == None:
+            self.root = new_node
+        elif new_node.key < y.key:
+            y.left = new_node
+        else:
+            y.right = new_node
+
+        # traverse tree from new_node to T.root and repair
+        node = new_node
+        while self.root.key != node.key:
+            if self.root.key < node.key:
+                self.repair_tree(node)
+                node = node.left
+            else:
+                self.repair_tree(node)
+                node = node.right
 
     def tree_search(self, start_node, target_key):
         if start_node == None or target_key == start_node.key:
@@ -79,6 +141,27 @@ class AVLTree:
             self.transplant(node, min_right_subtree)
             min_right_subtree.left = node.left
             min_right_subtree.left.p = min_right_subtree
+
+        #repair tree
+
+        while self.root.key != node.key:
+            if self.root.key < node.key:
+                self.repair_tree(node)
+                node = node.left
+            else:
+                self.repair_tree(node)
+                node = node.right
+
+        if self.tree_successor(node) != None:
+            successor = self.tree_successor(node)
+            while self.root.key != successor.key:
+                if self.root.key < successor.key:
+                    self.repair_tree(successor)
+                    successor = successor.left
+                else:
+                    self.repair_tree(node)
+                    successor = successor.right
+
 
     def tree_minimum(self, node):
         iterative_node = node
@@ -142,6 +225,11 @@ class AVLTree:
         right_child.left = node
         node.p = right_child
 
+    def rotate_left_right(self, node):
+        pass
+
+    def rotate_right_left(self, node):
+        pass
 
 
 
