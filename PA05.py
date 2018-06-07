@@ -1,5 +1,7 @@
 # TODO: define rotate_RL, rotate_LR, implement TikZ
 
+import subprocess
+
 class Node:
     def __init__(self, key, parent, left, right):
         self.key = key
@@ -24,19 +26,29 @@ class AVLTree:
         self.nodestyle = "circle, draw"
         self.edgestyle = "blue, very thick"
         self.root = None
+
     def __str__(self):
-        pass
+
+        commands = "blbal"
+
+        BASIS = '\\documentclass[tikz]{{standalone}} \n\n\
+        \\begin {{document}} \n\
+         \\begin{{tikzpicture}}[every node/.style = {{{}}}, every edge/.style = {{draw, {}}}] \n\n\
+          % Here go the sign commands. \n\
+          {} \n\n\
+         \\end{{tikzpicture}} \n\
+        \\end{{document}}'
+
+        BASIS.format(self.nodestyle, self.edgestyle, commands)
+
+        return BASIS
 
     def getheight(self, node):
-        iterative_node = node
-        height = 0
-        while iterative_node != None and self.root != iterative_node.key:
-            if self.root < iterative_node.key:
-                iterative_node = iterative_node.left
-            else:
-                iterative_node = iterative_node.right
-            height += 1
-        return height
+
+        if node == None:
+            return -1
+        else:
+            return max(self.getheight(node.left), self.getheight(node.right)) + 1
 
     def repair_tree(self, node):
         if node.balance == -2 and node.left.balance in (0,-1):
@@ -226,11 +238,24 @@ class AVLTree:
         node.p = right_child
 
     def rotate_left_right(self, node):
-        pass
+        self.rotate_left(node.left)
+        self.rotate_right(node)
 
     def rotate_right_left(self, node):
-        pass
+        self.rotate_right(node.right)
+        self.rotate_left(node)
 
+    def visualize(self):
+        #write str(self) in the avl.txt file
+        subprocess.run(['touch', 'avl.txt'])
+        with open('avl.txt', 'w') as file:
+            file.write(str(self))
+
+        #compile it by starting a pdflatex subprocess
+        subprocess.run(['pdflatex avl.txt'])
+
+        #show the produced pdf file in a viewer
+        subprocess.run(['open avl.pdf'])
 
 
 
