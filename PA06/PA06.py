@@ -1,9 +1,11 @@
 class Node:
-    def __init__(self, key, leftchild, rightchild, data):
+    def __init__(self, key, left, right, data):
         self.key = key
-        self.leftchild = leftchild
-        self.rightchild = rightchild
+        self.left = left
+        self.right = right
         self.data = data
+        self.p = None
+
 class SplayTree:
     def __init__(self, firstnodekey, firstnodedata):
         self.insert(firstnodekey, firstnodedata)
@@ -14,38 +16,61 @@ class SplayTree:
     def insert(self, key, data):
         pass
 
-    def rotate_left(self, node):
-        right_child = node.right
+    def splaying_step(self, node):
         if node.p == None:
-            self.root = right_child
-        elif node.p.left == node:
-            node.p.left = right_child
+            return
+        elif node.p.p == None and node == node.p.left:
+            self.rotate_right(node.p)
+        elif node.p.p == None and node == node.p.right:
+            self.rotate_left(node.p)
+        elif node == node.p.left and node.p == node.p.pleft:
+            self.rotate_right(node.p.p)
+            self.rotate_right(node.p)
+        elif node == node.p.right and node.p == node.p.p.right:
+            self.rotate_left(node.p.p)
+            self.rotate_left(node.p)
+        elif node == node.p.left and node.p == node.p.p.right:
+            self.rotate_right_left(node.p.p)
         else:
-            node.p.right = right_child
-        right_child.p = node.p
-        node.right = right_child.left
+            self.rotate_left_right(node.p.o)
+
+    def splay(self, node):
+        while node.p != None:
+            self.splaying_step(node)
+
+    def rotate_left(self, node):
+        right = node.right
+        if node.p == None:
+            self.root = right
+        elif node.p.left == node:
+            node.p.left = right
+        else:
+            node.p.right = right
+        right.p = node.p
+        node.right = right.left
         if node.right != None:
             node.right.p = node
-        right_child.left = node
-        node.p = right_child
+        right.left = node
+        node.p = right
 
     def rotate_right(self, node):
-        left_child = node.left
+        left = node.left
         if node.p == None:
-            self.root = left_child
+            self.root = left
         elif node.p.left == node:
-            node.p.left = left_child
+            node.p.left = left
         else:
-            node.p.right = left_child
-        left_child = node.p
-        node.left = left_child.right
+            node.p.right = left
+        left = node.p
+        node.left = left.right
         if node.left != None:
             node.left.p = node
-        left_child.right = node
-        node.p = left_child
+        left.right = node
+        node.p = left
 
     def tree_search(self, start_node, target_key):
         if start_node == None or target_key == start_node.key:
+            self.splay(start_node)
             return start_node
         if target_key < start_node.key:
             return self.tree_search(start_node.left, target_key)
