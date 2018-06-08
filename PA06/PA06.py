@@ -14,6 +14,9 @@ class SplayTree:
         self.root = firstnodekey
 
     def insert(self, key, data):
+        #this is just a placeholder to have an argument for self.splay
+        new_node = Node(0, None, None, "foo")
+        self.splay(new_node)
         pass
 
     def splaying_step(self, node):
