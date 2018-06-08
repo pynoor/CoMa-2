@@ -3,11 +3,12 @@ from PA06 import SplayTree
 
 def test_insert():
     # T = SplayTree(10, 10)
-    process = subprocess.run(['python3 ~/Documents/GitHub/CoMa-2/PA06/PA06.py\nT = SplayTree(10,10)\nfor i in range(9, 4, -1):\n\    T.insert(i,i)'], stdout = subprocess.PIPE)
+    process = subprocess.Popen(["""python3 -i ~/Documents/GitHub/CoMa-2/PA06/PA06.py\nT = SplayTree(10,10)\nfor i in range(9, 4, -1):\n\    T.insert(i,i)"""], stdout = subprocess.PIPE, shell = True)
     result = process.stdout.read()
     # for i in range(9, 4, -1):
     #     T.insert(i, i)
-    expected_result = 'Splay an Knoten: 9\n\
+    print(result)
+    expected_result = """Splay an Knoten: 9\n\
     2^Rotationen: 2\n\
     2^Potential vorher: 2\n\
     2^Potential nachher: 2\n\
@@ -36,7 +37,7 @@ def test_insert():
     2^Potential vorher: 144\n\
     2^Potential nachher: 720\n\
     2^amortisierte Rotationen: 1440/144\n\
-    2^obere Schranke: 432/1\n\ '
+    2^obere Schranke: 432/1\n\ """
     assert result == expected_result
 
 
