@@ -1,0 +1,10 @@
+\documentclass[tikz]{{standalone}} 
+
+        \begin {{document}} 
+            \begin{{tikzpicture}}[every node/.style = {{{}}}, every edge/.style = {{draw, {}}}] 
+
+            % Here go the sign commands. 
+        {} 
+
+            \end{{tikzpicture}} 
+        \end{{document}}
