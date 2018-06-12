@@ -1,4 +1,5 @@
 #ISSUE: formatting BASIS is not working
+#raises an Attribute Error when passed through the comajudge
 
 import subprocess
 
