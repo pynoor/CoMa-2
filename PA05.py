@@ -18,26 +18,25 @@ class AVLTree:
         self.nodestyle = 'circle, draw'
         self.edgestyle = 'blue, very thick'
         self.root = root
-        self.commands = 'foo'
+        self.commands = ''
 
     def __str__(self):
         # returns a string representation of a tikz visualization of the tree in latex code
         self.command_builder(self.root, 0, 0, 2**self.getheight(self.root))
+        # TODO: find a way to indent commands
         BASIS = \
         '\\documentclass[tikz]{{standalone}} \n\n\
         \\begin {{document}} \n\
-            \\begin{{tikzpicture}}[every node/.style = {{{}}}, every edge/.style = {{draw, {}}}] \n\n\
+         \\begin{{tikzpicture}}[every node/.style = {{{}}}, every edge/.style = {{draw, {}}}] \n\n\
             % Here go the sign commands. \n\
         {} \n\n\
-            \\end{{tikzpicture}} \n\
+          \\end{{tikzpicture}} \n\
         \\end{{document}}'
 
-        BASIS.format(self.nodestyle, self.edgestyle, self.commands)
-
-        return BASIS
+        return BASIS.format(self.nodestyle, self.edgestyle, self.commands)
 
     def node_command(self, node, x, y):
-        return '\n\\coordinate(x{}) at ({},{}); \n\\node (n{}) at (x{}) {};'.format(node.key, x, y, node.key, node.key,'{'+str(node.key)+'}')
+        return '\n\\coordinate(x{}) at ({},{}); \n\\node (n{}) at (x{}) {};'.format(node.key, x, y, node.key, node.key,'{$'+str(node.key)+'$}')
 
     def command_builder(self, node, x, y, height):
         # builds the tikz picture of the tree
@@ -140,12 +139,11 @@ class AVLTree:
         self.rotate_left(node)
 
     def visualize(self):
-        #write str(self) in the avl.txt file
         #subprocess.run(['touch', 'avl.txt'])
-        with open('avl.txt', 'w') as file:
+        with open('avl.tex', 'w') as file:
             file.write(str(self))
         #compile it by starting a pdflatex subprocess
-        subprocess.run(['pdflatex', 'avl.txt'])
+        subprocess.run(['pdflatex', 'avl.tex'])
         #show the produced pdf file in a viewer
         subprocess.run(['open', 'avl.pdf'])
 

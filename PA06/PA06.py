@@ -1,10 +1,10 @@
 class Node:
-    def __init__(self, key, left, right, data):
+    def __init__(self, key, parent, left, right, data):
         self.key = key
         self.left = left
         self.right = right
         self.data = data
-        self.p = None
+        self.p = parent
 
 class SplayTree:
     def __init__(self, firstnodekey, firstnodedata):
@@ -14,10 +14,24 @@ class SplayTree:
         self.root = firstnodekey
 
     def insert(self, key, data):
-        #this is just a placeholder to have an argument for self.splay
-        new_node = Node(0, None, None, "foo")
+        #inserts a new node into the splay tree
+        new_node = Node(key, None, None, None, data)
+        y = None
+        x = self.root
+        while x != None:
+            y = x
+            if new_node.key < x.key:
+                x = x.left
+            else:
+                x = x.right
+        new_node.p = y
+        if y == None:
+            self.root = new_node
+        elif new_node.key < y.key:
+            y.left = new_node
+        else:
+            y.right = new_node
         self.splay(new_node)
-        pass
 
     def splaying_step(self, node):
         if node.p == None:
@@ -35,7 +49,7 @@ class SplayTree:
         elif node == node.p.left and node.p == node.p.p.right:
             self.rotate_right_left(node.p.p)
         else:
-            self.rotate_left_right(node.p.o)
+            self.rotate_left_right(node.p.p)
 
     def splay(self, node):
         while node.p != None:
@@ -71,14 +85,6 @@ class SplayTree:
         left.right = node
         node.p = left
 
-    def tree_search(self, start_node, target_key):
-        if start_node == None or target_key == start_node.key:
-            self.splay(start_node)
-            return start_node
-        if target_key < start_node.key:
-            return self.tree_search(start_node.left, target_key)
-        else:
-            return self.tree_search(start_node.right, target_key)
 
     def transplant(self, node_1, node_2):
         if node_1.p == None:
