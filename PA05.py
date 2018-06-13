@@ -36,33 +36,32 @@ class AVLTree:
 
         return BASIS
 
-    def node_command(self, node, leftkey, rightkey):
-        return '\n\coordinate(x{}) at ({},{}); \n\\node[Nodestyle] (n{}) at (x{}) {};'.format(node.key, leftkey, rightkey, node.key, node.key,'{'+str(node.key)+'}')
+    def node_command(self, node, x, y):
+        return '\n\\coordinate(x{}) at ({},{}); \n\\node (n{}) at (x{}) {};'.format(node.key, x, y, node.key, node.key,'{'+str(node.key)+'}')
 
-    def command_builder(self, node, leftkey, rightkey, height):
+    def command_builder(self, node, x, y, height):
         # builds the tikz picture of the tree
         if node != None:
-            self.commands += self.node_command(node, leftkey, rightkey)
+            self.commands += self.node_command(node, x, y)
             if node != self.root:
-                self.commands += '\n\ \\draw[Edgestyle] (n{}) to (n{}) ; \n'.format(node.p.key, node.key)
-            self.command_builder(node.left, leftkey - height, rightkey - 2, height//2)
-            self.command_builder(node.right, leftkey + height, rightkey - 2, height//2)
+                self.commands += '\n\\draw (n{}) edge (n{}); \n'.format(node.p.key, node.key)
+            self.command_builder(node.left, x - height, y - 2, height//2)
+            self.command_builder(node.right, x + height, y - 2, height//2)
 
     def getbalance(self, node):
-        if self == None:
+        if node == None:
             return 0
-        left_child, right_child = node.left, node.right
-        return self.getheight(right_child) - self.getheight(left_child)
+        else:
+            return self.getheight(node.right) - self.getheight(node.left)
 
     def getheight(self, node):
-
         if node == None:
             return -1
         else:
             return max(self.getheight(node.left), self.getheight(node.right)) + 1
 
     def repair_tree(self, node):
-
+        #repairs the balances of the tree by performing rotations
         while abs(self.getbalance(node)) > 1:
             if self.getbalance(node) < -1 and node.left != None:
                 if self.getbalance(node.left) <= 0:
@@ -76,6 +75,8 @@ class AVLTree:
                     self.rotate_right_left(node)
 
     def insert(self, key):
+        #inserts a new node in the tree in a way that the tree remains
+        #an avl tree and repairs the balances
         new_node = Node(key, None, None, None)
         y = None
         x = self.root
@@ -140,13 +141,13 @@ class AVLTree:
 
     def visualize(self):
         #write str(self) in the avl.txt file
-        subprocess.run(['touch', 'avl.txt'])
+        #subprocess.run(['touch', 'avl.txt'])
         with open('avl.txt', 'w') as file:
             file.write(str(self))
         #compile it by starting a pdflatex subprocess
         subprocess.run(['pdflatex', 'avl.txt'])
         #show the produced pdf file in a viewer
-        subprocess.run(['open avl.pdf'])
+        subprocess.run(['open', 'avl.pdf'])
 
 
 
