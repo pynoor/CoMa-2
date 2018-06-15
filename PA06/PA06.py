@@ -39,7 +39,7 @@ class SplayTree:
             else:
                 return search_help(start.right, key)
         found_node = search_help(self.root, key)
-        self.splay(found_node)
+        self.Splay(found_node)
         return found_node
 
     def insert(self, key, data):
@@ -60,7 +60,7 @@ class SplayTree:
             y.left = new_node
         else:
             y.right = new_node
-        self.splay(new_node)
+        self.Splay(new_node)
 
     def splaying_step(self, node):
         rotation_count = 0
@@ -96,7 +96,7 @@ class SplayTree:
             product *= len(self.traverse(node))
         return product
 
-    def splay(self, node):
+    def Splay(self, node):
         store_initial_potential = self.calculate_potential()
         store_nodes_initial_subtree_count = len(self.traverse(node))
         self.rotation_count = 0
