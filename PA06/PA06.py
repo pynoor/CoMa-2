@@ -63,22 +63,31 @@ class SplayTree:
         self.splay(new_node)
 
     def splaying_step(self, node):
+        rotation_count = 0
         if node.p == None:
             return
         elif node.p.p == None and node == node.p.left:
             self.rotate_right(node.p)
+            rotation_count += 1
         elif node.p.p == None and node == node.p.right:
             self.rotate_left(node.p)
+            rotation_count += 1
         elif node == node.p.left and node.p == node.p.p.left:
             self.rotate_right(node.p.p)
             self.rotate_right(node.p)
+            rotation_count += 2
         elif node == node.p.right and node.p == node.p.p.right:
             self.rotate_left(node.p.p)
             self.rotate_left(node.p)
+            rotation_count += 2
         elif node == node.p.left and node.p == node.p.p.right:
             self.rotate_right_left(node.p.p)
+            rotation_count += 2
         else:
             self.rotate_left_right(node.p.p)
+            rotation_count += 2
+
+        return rotation_count
 
 
     def calculate_potential(self):
@@ -92,7 +101,7 @@ class SplayTree:
         store_nodes_initial_subtree_count = len(self.traverse(node))
         self.rotation_count = 0
         while node.p != None:
-            self.splaying_step(node)
+            self.rotation_count += self.splaying_step(node)
         store_final_potential = self.calculate_potential()
         self.upper_boundary = str(2*(len(self.traverse(self.root)))**3)+ '/'+ str((store_nodes_initial_subtree_count)**3)
         print('Splay an Knoten: '+str(node.key))
@@ -101,6 +110,7 @@ class SplayTree:
         print('2^Potential nachher: '+str(store_final_potential))
         print('2^amortisierte Rotationen: ' +str((2**self.rotation_count)*store_final_potential)+'/'+str(store_initial_potential))
         print('2^obere Schranke: ' + self.upper_boundary)
+        self.rotation_count = 0
 
     def rotate_left(self, node):
         right = node.right
@@ -116,7 +126,6 @@ class SplayTree:
             node.right.p = node
         right.left = node
         node.p = right
-        self.rotation_count += 1
 
     def rotate_right(self, node):
         left = node.left
@@ -132,7 +141,6 @@ class SplayTree:
             node.left.p = node
         left.right = node
         node.p = left
-        self.rotation_count += 1
 
     def transplant(self, node_1, node_2):
         if node_1.p == None:
@@ -222,9 +230,7 @@ class SplayTree:
     def rotate_left_right(self, node):
         self.rotate_left(node.left)
         self.rotate_right(node)
-        self.rotation_count += 2
 
     def rotate_right_left(self, node):
         self.rotate_right(node.right)
         self.rotate_left(node)
-        self.rotation_count += 2
