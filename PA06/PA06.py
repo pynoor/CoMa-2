@@ -154,58 +154,27 @@ class SplayTree:
         if node_2 != None:
             node_2.p = node_1.p
 
-    def replace(self, node1, node2):
-        if node1.p.left == node1:
-            node1.p.left = node2
-        else:
-            node1.p.right = node2
-        node2.p = node1.p
 
     def delete(self, key):
+        if self.root.left == None and self.root.right == None:
+            return
         node = self.search(key)
-
-        #Case 1 : Node does not have children
-        if node.left == None and node.right == None:
-            if node.p.left == node:
-                node.p.left = None
+        if node != None:
+            if node.left == None:
+                self.transplant(node, node.right)
+            elif node.right == None:
+                self.transplant(node, node.left)
             else:
-                node.p.right = None
-            return
-
-        #Case 2: Node has one child
-        if node.left != None and node.right == None:
-            self.replace(node, node.left)
-            return
-
-        elif node.left == None and node.right != None:
-            self.replace(node, node.right)
-            return
-
-        #Case 3: Node has two children
-        successor = self.tree_successor(node)
-        if node.right == successor:
-            self.replace(node, successor)
-            return
-
+                y = self.tree_minimum(node.right)
+                if y.p != node:
+                    self.transplant(y, y.right)
+                    y.right = node.right
+                    y.right.p = y
+                self.transplant(node, y)
+                y.left = node.left
+                y.left.p = y
         else:
-            self.replace(successor, successor.right)
-            self.replace(node, successor)
-
-
-
-        # if node.left == None:
-        #     self.transplant(node, node.right)
-        # elif node.right == None:
-        #     self.transplant(node, node.left)
-        # else:
-        #     min_right_subtree = self.tree_minimum(node.right)
-        #     if min_right_subtree.p != node:
-        #         self.transplant(min_right_subtree, min_right_subtree.right)
-        #         min_right_subtree.right = node.right
-        #         min_right_subtree.p = min_right_subtree
-        #     self.transplant(node, min_right_subtree)
-        #     min_right_subtree.left = node.left
-        #     min_right_subtree.left.p = min_right_subtree
+            return
 
     def tree_successor(self, node):
         store_node = node
@@ -218,10 +187,9 @@ class SplayTree:
         return successor
 
     def tree_minimum(self, node):
-        iterative_node = node
         while node.left != None:
-            iterative_node = node.left
-        return iterative_node
+            node = node.left
+        return node
 
     def tree_maximum(self, node):
         iterative_node = node
