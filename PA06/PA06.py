@@ -9,14 +9,8 @@ class Node:
 
 class SplayTree:
     def __init__(self, firstnodekey, firstnodedata):
-        root = Node(firstnodekey, None, None, None, firstnodedata)
-        self.firstnodekey = firstnodekey
-        self.firstnodedata = firstnodedata
-        self.root = root
+        self.root = Node(firstnodekey, None, None, None, firstnodedata)
         self.rotation_count = 0
-        self.initial_potential = 0
-        self.final_potential = 0
-        self.amortised_rotations = 0
         self.upper_boundary = ''
 
     def traverse(self, node):
@@ -30,6 +24,22 @@ class SplayTree:
         return tree
 
     def search(self, key):
+        start = self.root
+        store_start = start
+        while start != None and key != start.key:
+            store_start = start
+            if key < start.key:
+                start = start.left
+            else:
+                start = start.right
+
+        if start == None:
+            self.Splay(store_start)
+            return start
+        else:
+            self.Splay(start)
+            return start
+
         def search_help(start, target):
             if start == None or key == start.key:
                 return start
@@ -88,7 +98,6 @@ class SplayTree:
             self.rotate_left(node.p)
             self.rotate_right(node.p)
             rotation_count += 2
-
         return rotation_count
 
 
@@ -102,6 +111,7 @@ class SplayTree:
         store_initial_potential = self.calculate_potential()
         store_nodes_initial_subtree_count = len(self.traverse(node))
         self.rotation_count = 0
+        self.upper_boundary = ''
         while node.p != None:
             self.rotation_count += self.splaying_step(node)
         store_final_potential = self.calculate_potential()
@@ -113,6 +123,7 @@ class SplayTree:
         print('2^amortisierte Rotationen: ' +str((2**self.rotation_count)*store_final_potential)+'/'+str(store_initial_potential))
         print('2^obere Schranke: ' + self.upper_boundary)
         self.rotation_count = 0
+        self.upper_boundary = ''
 
     def rotate_left(self, node):
         right = node.right
