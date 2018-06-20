@@ -1,4 +1,3 @@
-import math
 
 class Node:
     def __init__(self, key, parent, left, right, data):
@@ -39,7 +38,8 @@ class SplayTree:
             else:
                 return search_help(start.right, key)
         found_node = search_help(self.root, key)
-        self.Splay(found_node)
+        if found_node != None:
+            self.Splay(found_node)
         return found_node
 
     def insert(self, key, data):
@@ -81,10 +81,12 @@ class SplayTree:
             self.rotate_left(node.p)
             rotation_count += 2
         elif node == node.p.left and node.p == node.p.p.right:
-            self.rotate_right_left(node.p.p)
+            self.rotate_right(node.p)
+            self.rotate_left(node.p)
             rotation_count += 2
         else:
-            self.rotate_left_right(node.p.p)
+            self.rotate_left(node.p)
+            self.rotate_right(node.p)
             rotation_count += 2
 
         return rotation_count
