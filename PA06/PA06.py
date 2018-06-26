@@ -1,3 +1,5 @@
+import tkinter
+from tkinter import *
 
 class Node:
     def __init__(self, key, parent, left, right, data):
@@ -215,3 +217,134 @@ class SplayTree:
     def rotate_right_left(self, node):
         self.rotate_right(node.right)
         self.rotate_left(node)
+
+
+    def draw(self, canvas):
+        root = Tk()
+        canvas = canvas
+        canvas.pack()
+        canvas.create_line()
+        self.height = canvas.canvasinfo_reqheight()
+        self.width = canvas.canvasinfo_reqwidth
+        root.mainloop()
+
+        def draw_line(start_x, start_y, end_x, end_y):
+            self.canvas.create_line(start_x, start_y, end_x, end_y, tags = 'line')
+
+        #change the name of z...
+        def recursive_drawer(node, z, mid_width, mid_depth, side, i):
+            self.canvas.create_rectangle(mid_width-side, mid_depth-side, mid_width+side, mid_depth+side, fill = 'grey')
+            self.canvas.create_text(mid_width, mid_depth, text = str(parent.key))
+            if node.left != None:
+                side = side/(2**i)
+                #change name of q...
+                draw_line(mid_width, mid_depth+side, mid_width+side, mid_depth-side+q)
+                recursive_drawer(node.left, z, mid_width-side, mid_depth+q, side, i+1)
+            if node.right != None:
+                side = side/(2**i)
+                draw_line(mid_width, mid_depth+side, mid_width+side, mid_depth-side+q)
+                recursive_drawer(node.right, z, mid_width+side, mid_depth+q, side, i+1)
+        recursive_drawer(self.root, z, z/2, side+5, side, 2)
+
+
+
+class TreeVisualizer:
+    def __init__(self, root):
+        self.root = root
+
+        #create entry fields for key and data
+        Label(root, text = 'Enter key').grid(row = 0)
+        Label(root, text = 'Enter data').grid(row = 1)
+        self.key_entry = Entry(root)
+        self.data_entry = Entry(root)
+        self.key_entry.grid(row = 0, column = 1)
+        self.data_entry.grid(row = 1, column = 1)
+
+        #create construct button
+        self.construct_button = Button(text = 'construct', fg = 'blue', command = lambda:self.construct(int(self.key_entry.get(), self.data_entry.get()))
+        self.construct_button.grid(row = 0)
+
+        #ERROR here: To be fixed
+
+    def construct(self, key, data):
+
+        #create Class variable that points to the tree in question
+        self.Tree = SplayTree(key, data)
+
+        #destroy 'construct' button
+        self.construct_button.destroy()
+        # TODO: find out how to create new canvas object
+
+        #create canvas object
+        self.canvas = Canvas(**args, width = 500, height = 500)
+        self.canvas.grid(row = 0)
+
+        #draw tree using SplayTree method 'draw', passing the previously
+        #created canvas object as argument
+
+        self.Tree.draw(self.canvas)
+
+        #create insert button
+        self.insert_button = Button(text = 'insert', fg = 'blue', command = self.insert(int(self.key_entry.get()), self.data_entry.get())
+        self.insert_button.grid(row = 0, column = 0)
+
+        #create search button
+        self.search_button = Button(text = 'search', fg = 'blue', command = self.search(int(self.key_entry.get()))
+        self.search_button.grid(row = 0, column = 1)
+
+        #create delete button
+        self.delete_button = Button(text = 'delete', fg = 'blue', command = self.delete(int(self.key_entry.get()))
+        self.delete_button.grid(row = 0, column = 2)
+
+    def insert(self, key, data):
+
+        #insert node using SplayTree method 'insert'
+        self.Tree.insert(key, data)
+
+        #destroy existing canvas
+        self.canvas.destroy()
+
+        #create new empty canvas
+        self.canvas = Canvas(root, width = 500, height = 500)
+        self.canvas.grid(row = 0)
+
+        #draw the new tree (resulting from the insertion) into the canvas
+        #using SplayTree method 'draw'
+        self.Tree.draw(self.canvas)
+
+
+    def search(self, key):
+
+        #search for node that has the required key using SplayTree
+        #method 'search' and store result in variable 'result'
+        result = self.Tree.search(key):
+
+        #if the found node is 'None', return string 'None'
+        if result == None:
+            print('None')
+
+        #else return the key and the data of the found node in the
+        #following string
+        else:
+            print('Node with key: ' + str(result.key) + ' and data: ' + str(result.data))
+
+
+    def delete(self, key):
+
+        #delete node with argument key in the Tree using the SplayTree
+        #method 'delete'
+        self.Tree.delete(key)
+
+        #destroy the existing canvas
+        self.canvas.destroy()
+
+        #create a new empty canvas
+        self.canvas = Canvas(root, width = 500, height = 500)
+        self.canvas.grid(row = 0)
+
+        #draw the new Tree (resulting from the deletion) into the canvas
+        #using SplayTree method 'draw'
+        self.Tree.draw(self.canvas)
+
+root = Tk()
+root.mainloop()
