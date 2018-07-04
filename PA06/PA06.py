@@ -225,59 +225,76 @@ class SplayTree:
             return max(self.getheight(node.left), self.getheight(node.right)) + 1
 
     def draw(self, canvas):
-        root = Tk()
+
         self.canvas = canvas
-        canvas.pack()
-        canvas.create_line()
-        self.canvas_height = canvas.canvasinfo_reqheight()
-        self.canvas_width = canvas.canvasinfo_reqwidth()
-        root.mainloop()
 
-        #calculate height of tree
-        self.height = self.getheight(self.root)
+        self.canvas_height = canvas.winfo_reqheight()
+        self.canvas_width = canvas.winfo_reqwidth()
 
-        node_x = self.canvas_width/(2**self.height)
-        node_y = self.canvas_height/(self.height + 2)
-        side = 10
+        half_rect_width = 30
+        half_rect_height = 15
 
-        def draw_line(start_x, start_y, end_x, end_y):
-            self.canvas.create_line(start_x, start_y, end_x, end_y, tags = 'line')
+        width_position = self.canvas_width//2
+        height_position = 20
 
-        #change the name of z...
-        def recursive_drawer(node, canvas_width, mid_width, mid_depth, side, i):
-            self.canvas.create_rectangle(mid_width-side, mid_depth-side, mid_width+side, mid_depth+side, fill = 'grey')
-            self.canvas.create_text(mid_width, mid_depth, text = str(node.key))
+        def recursive_drawer(node, width_position, height_position):
+            canvas.create_rectangle(width_position - half_rect_width, height_position + half_rect_height, width_position + half_rect_width, height_position - half_rect_height, fill = 'grey')
+            canvas.create_text(width_position, height_position, text = str(node.key))
             if node.left != None:
-                side_reduction = self.canvas_width/(2**i)
-                #change name of q...
-                draw_line(mid_width, mid_depth+side, mid_width-side_reduction, mid_depth-side+node_y)
-                recursive_drawer(node.left, self.canvas_width, mid_width-side_reduction, mid_depth+node_y, side, i+1)
+                print('is left neighbour')
+                initial_width_position = width_position
+                initial_height_position = height_position
+                width_position -= 35
+                height_position += 35
+                canvas.create_line(initial_width_position + half_rect_width, initial_height_position + half_rect_height, width_position + half_rect_width, height_position - half_rect_height)
+                recursive_drawer(node.left, width_position, height_position)
             if node.right != None:
-                side = side/(2**i)
-                draw_line(mid_width, mid_depth+side, mid_width+side_reduction, mid_depth-side+node_y)
-                recursive_drawer(node.right, self.canvas_width, mid_width+side_reduction, mid_depth+node_y, side, i+1)
-        recursive_drawer(self.root, self.canvas_width, self.canvas_width/2, side+5, side, 2)
+                initial_width_position = width_position
+                initial_height_position = height_position
+                width_position += 35
+                height_position += 35
+                canvas.create_line(initial_width_position + half_rect_width, initial_height_position + half_rect_height, width_position + half_rect_width, height_position - half_rect_height)
+                recursive_drawer(node.right, width_position, height_position)
+
+        recursive_drawer(self.root, width_position, height_position)
 
 
 
 class TreeVisualizer:
     def __init__(self, root):
         self.root = root
-        self.frame = Frame(self.root)
+
+        self.root.title('Welcome')
+
+        #create main frames
+        self.entry_frame = Frame(self.root)
+        self.button_frame = Frame(self.root)
+        self.canvas_frame = Frame(self.root)
+
+        #layout main frames
+        self.entry_frame.grid(row = 0)
+        self.button_frame.grid(row = 1)
+        self.canvas_frame.grid(row = 2)
+
+
         #create entry fields for key and data
+        key_label = Label(self.entry_frame, text = 'Enter key')
+        data_label = Label(self.entry_frame, text = 'Enter data')
+        self.key_entry = Entry(self.entry_frame)
+        self.data_entry = Entry(self.entry_frame)
 
-        self.key_entry = Entry(self.frame.grid(row = 0, column = 1))
-        self.data_entry = Entry(self.frame.grid(row = 1, column = 1))
 
-        #create lables for entry fields
-        Label(self.key_entry, text = 'Enter key').grid(row = 0)
-        Label(self.data_entry, text = 'Enter data').grid(row = 1)
+        #layout entry fields in entry frame
+        key_label.grid(row = 0, column = 0)
+        data_label.grid(row = 0, column = 1)
+        self.key_entry.grid(row = 1, column = 0)
+        self.data_entry.grid(row = 1, column = 1)
 
         #create construct button
-
-        self.construct_button = Button(self.frame.grid(row = 1), text = 'construct', fg = 'blue',
+        self.construct_button = Button(self.button_frame, text = 'construct', fg = 'blue',
         command = lambda:self.construct(int(self.key_entry.get()), self.data_entry.get()))
 
+        self.construct_button.grid(row = 0, column = 1)
 
     def construct(self, key, data):
 
@@ -286,29 +303,27 @@ class TreeVisualizer:
 
         #destroy 'construct' button
         self.construct_button.destroy()
-        # TODO: find out how to create new canvas object
 
         #create canvas object
-        self.canvas = Canvas(**args, width = 500, height = 500)
-        self.canvas.grid(row = 2)
+        self.canvas = Canvas(self.canvas_frame, width = 1000, height = 1000)
+        self.canvas.grid(row = 0)
 
         #draw tree using SplayTree method 'draw', passing the previously
         #created canvas object as argument
-
         self.Tree.draw(self.canvas)
 
         #create insert button
-        self.insert_button = Button(self.frame.grid(row = 1), text = 'insert', fg = 'blue',
+        self.insert_button = Button(self.button_frame, text = 'insert', fg = 'blue',
         command = lambda:self.insert(int(self.key_entry.get()), self.data_entry.get()))
         self.insert_button.grid(row = 0, column = 0)
 
         #create search button
-        self.search_button = Button(self.frame.grid(row = 1), text = 'search', fg = 'blue',
+        self.search_button = Button(self.button_frame, text = 'search', fg = 'blue',
         command = lambda:self.search(int(self.key_entry.get())))
         self.search_button.grid(row = 0, column = 1)
 
         #create delete button
-        self.delete_button = Button(self.frame.grid(row = 1), text = 'delete', fg = 'blue',
+        self.delete_button = Button(self.button_frame, text = 'delete', fg = 'blue',
         command = lambda:self.delete(int(self.key_entry.get())))
         self.delete_button.grid(row = 0, column = 2)
 
@@ -321,7 +336,7 @@ class TreeVisualizer:
         self.canvas.destroy()
 
         #create new empty canvas
-        self.canvas = Canvas(root, width = 500, height = 500)
+        self.canvas = Canvas(self.canvas_frame, width = 1000, height = 1000)
         self.canvas.grid(row = 0)
 
         #draw the new tree (resulting from the insertion) into the canvas
@@ -334,6 +349,12 @@ class TreeVisualizer:
         #search for node that has the required key using SplayTree
         #method 'search' and store result in variable 'result'
         result = self.Tree.search(key)
+
+        #delete all nodes in canvas object
+        self.canvas.delete('all')
+
+        #draw new Tree resulting from search operation
+        self.Tree.draw(self.canvas)
 
         #if the found node is 'None', return string 'None'
         if result == None:
@@ -355,12 +376,10 @@ class TreeVisualizer:
         self.canvas.destroy()
 
         #create a new empty canvas
-        self.canvas = Canvas(root, width = 500, height = 500)
+        self.canvas = Canvas(self.canvas_frame, width = 1000, height = 1000)
         self.canvas.grid(row = 0)
 
         #draw the new Tree (resulting from the deletion) into the canvas
         #using SplayTree method 'draw'
         self.Tree.draw(self.canvas)
 
-root = Tk()
-root.mainloop()
