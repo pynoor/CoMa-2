@@ -1,4 +1,3 @@
-#ERROR in visualize()
 
 import subprocess
 
