@@ -1,5 +1,4 @@
-#ISSUE: formatting BASIS is not working
-#raises an Attribute Error when passed through the comajudge
+#ERROR in visualize()
 
 import subprocess
 
@@ -108,7 +107,7 @@ class AVLTree:
             node.p.left = left_child
         else:
             node.p.right = left_child
-        left_child = node.p
+        left_child.p = node.p
         node.left = left_child.right
         if node.left != None:
             node.left.p = node
@@ -143,9 +142,9 @@ class AVLTree:
         with open('avl.tex', 'w') as file:
             file.write(str(self))
         #compile it by starting a pdflatex subprocess
-        subprocess.run(['pdflatex', 'avl.tex'])
+        subprocess.call(['pdflatex', 'avl.tex'], stdout=subprocess.DEVNULL)
         #show the produced pdf file in a viewer
-        subprocess.run(['open', 'avl.pdf'])
+        subprocess.call(['open', 'avl.pdf'])
 
 
 

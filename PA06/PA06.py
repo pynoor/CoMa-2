@@ -49,6 +49,8 @@ class SplayTree:
                 return search_help(start.left, key)
             else:
                 return search_help(start.right, key)
+
+
         found_node = search_help(self.root, key)
         if found_node != None:
             self.Splay(found_node)
@@ -237,26 +239,25 @@ class SplayTree:
         width_position = self.canvas_width//2
         height_position = 20
 
-        def recursive_drawer(node, width_position, height_position):
-            canvas.create_rectangle(width_position - half_rect_width, height_position + half_rect_height, width_position + half_rect_width, height_position - half_rect_height, fill = 'grey')
-            canvas.create_text(width_position, height_position, text = str(node.key))
+        def recursive_drawer(node, width_position_old, height_position_old, nodeheight):
+            canvas.create_rectangle(width_position_old - half_rect_width, height_position_old + half_rect_height, width_position_old + half_rect_width, height_position_old - half_rect_height, fill = 'grey')
+            canvas.create_text(width_position_old, height_position_old, text = str(node.key))
             if node.left != None:
-                print('is left neighbour')
-                initial_width_position = width_position
-                initial_height_position = height_position
-                width_position -= 35
-                height_position += 35
-                canvas.create_line(initial_width_position + half_rect_width, initial_height_position + half_rect_height, width_position + half_rect_width, height_position - half_rect_height)
-                recursive_drawer(node.left, width_position, height_position)
+                initial_width_position = width_position_old
+                initial_height_position = height_position_old
+                width_position = width_position_old-250*(2**(-nodeheight))
+                height_position = height_position_old+50
+                canvas.create_line(initial_width_position - half_rect_width, initial_height_position + half_rect_height, width_position + half_rect_width, height_position - half_rect_height)
+                recursive_drawer(node.left, width_position, height_position, nodeheight+1)
             if node.right != None:
-                initial_width_position = width_position
-                initial_height_position = height_position
-                width_position += 35
-                height_position += 35
-                canvas.create_line(initial_width_position + half_rect_width, initial_height_position + half_rect_height, width_position + half_rect_width, height_position - half_rect_height)
-                recursive_drawer(node.right, width_position, height_position)
+                initial_width_position = width_position_old
+                initial_height_position = height_position_old
+                width_position = width_position_old+250*(2**(-nodeheight))
+                height_position = height_position_old+50
+                canvas.create_line(initial_width_position + half_rect_width, initial_height_position + half_rect_height, width_position - half_rect_width, height_position - half_rect_height)
+                recursive_drawer(node.right, width_position, height_position, nodeheight+1)
 
-        recursive_drawer(self.root, width_position, height_position)
+        recursive_drawer(self.root, width_position, height_position, 0)
 
 
 
